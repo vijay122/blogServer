@@ -8,6 +8,38 @@ var EventEmitter = require('events').EventEmitter;
 
 var app = module.exports.app = express();
 
+//Very important change for enabling cross domain origin ----------------Start
+app.use(function(req, res, next) {
+    var oneof = false;
+    if(req.headers.origin) {
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+      //  res.header('Access-Control-Allow-Origin', "http://api.wunderground.com");
+        console.log("Origin:"+req.headers.origin);
+        oneof = true;
+    }
+    if(req.headers['access-control-request-method']) {
+        res.header('Access-Control-Allow-Methods', req.headers['access-control-request-method']);
+        oneof = true;
+    }
+    if(req.headers['access-control-request-headers']) {
+        res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers']);
+        oneof = true;
+    }
+    if(oneof) {
+        res.header('Access-Control-Max-Age', 60 * 60 * 24 * 365);
+    }
+
+    // intercept OPTIONS method
+    if (oneof && req.method == 'OPTIONS') {
+        res.status(200).send();
+    }
+    else {
+        next();
+    }
+});
+//Very important change for enabling cross domain origin ----------------End
+
+
 var config = {
   name: 'Simple Blog',
   publicPath: '/public',
@@ -99,11 +131,19 @@ var setup = module.exports.setup = function(userConfig) {
       .skip(Math.max(0, req.query.page - 1) * limit || 0)
       .exec(function(err, posts) {
         if (err) { res.statusCode(500); res.end(); }
+        
+        res.send(200, {
+          title: '',
+          posts: posts,
+          page: parseInt(req.query.page, 1) || 1
+        });
+       /*
         res.render('index', {
           title: '',
           posts: posts,
-          page: parseInt(req.query.page, 10) || 1
+          page: parseInt(req.query.page, 1) || 1
         });
+         */
       });
   });
 
@@ -202,12 +242,12 @@ var setup = module.exports.setup = function(userConfig) {
   app.post('/new', function(req, res) {
     if (
       process.env.NODE_ENV === 'production' &&
-      req.body.secret !== config.secret
+      req.body.payload.secret !== config.secret
     ) {
       res.statusCode = 400;
       res.end();
     } else {
-      new Post(req.body)
+      new Post(req.body.payload)
         .setSlugType(config.slugType)
         .save(function(err, data) {
           if (err) {
@@ -261,7 +301,8 @@ var setup = module.exports.setup = function(userConfig) {
 
   // SUBMIT COMMENT
   app.post('/post/:slug/comment', function(req, res) {
-    if (!(req.body && req.body.name && req.body.body)) {
+    console.log("slug post");
+    if (!(req.body && req.body.payload && req.body.payload.name && req.body.payload.body)) {
       res.statusCode = 500; res.end(); return;
     }
     Post
@@ -269,7 +310,7 @@ var setup = module.exports.setup = function(userConfig) {
       .where('published', true)
       .findOne( function(err, post) {
         if (err || !post) { res.statusCode = 404; res.end(); return; }
-        var comment = req.body;
+        var comment = req.body.payload;
         post.comments.push(comment);
 
         simpleEvents.emit('comment', comment);
@@ -326,6 +367,16 @@ var setup = module.exports.setup = function(userConfig) {
     });
   }
 };
+
+this.setup();
+
+ http.createServer(app).listen(app.get('port'), function() {
+
+    console.log("hi this is arun virats code");
+    console.log('Started ' + config.name+' on port ' + app.get('port'));
+
+    simpleEvents.emit('start', { config: config });
+  });
 
 module.exports.start = function() {
   if (!isSetup) { setup(); }

@@ -3,7 +3,7 @@ var md = require('node-markdown').Markdown;
 var slug = require('slug');
 var bases = require('bases');
 
-mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/blog');
+mongoose.connect(process.env.MONGO_URL || 'mongodb://root:Vjy4livelytrips@148.72.246.39:27017/blog?authSource=admin');
 
 var schema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
@@ -41,7 +41,12 @@ var schema = new mongoose.Schema({
   }},
   published: { type: Boolean, 'default': false },
   date: { type: Date, 'default': Date.now },
-  tags: [ String ]
+  tags: [ String ],
+	items:[{
+		title : String,
+		content : String,
+		image:String
+	}]
 });
 
 schema.pre('save', function(next) {

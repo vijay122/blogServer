@@ -1,5 +1,5 @@
 {
-  "name": "simple-blog",
+  "name": "blogServer",
   "description": "A simple, session-free and extendable blogging platform.",
   "keywords": [
     "blog",
@@ -7,11 +7,13 @@
     "fast"
   ],
   "version": "1.5.1",
-  "author": "Gregory Schier <greg@schier.co>",
-  "repository": "https://github.com/gschier/simple-blog",
+  "author": "raagavan.vijay@gmail.com",
+  "repository": "https://github.com/vijay122/blogServer",
   "main": "simple",
   "dependencies": {
-    "express": "3.0.5",
+    "express": "^4.8.0",
+    "body-parser": "^1.5.2",
+    "errorhandler": "^1.1.1",
     "jade": "~1.1.5",
     "stylus": "~0.42.2",
     "rss": "~0.3.2",
@@ -19,5 +21,8 @@
     "mongoose": ">=3.0.0",
     "slug": "~0.4.0",
     "bases": "~0.2.0"
+  },
+  "scripts": {
+    "start": "node simple.js"
   }
 }
