@@ -11,16 +11,17 @@
   "repository": "https://github.com/vijay122/blogServer",
   "main": "simple",
   "dependencies": {
-    "express": "^4.8.0",
+    "bases": "~0.2.0",
     "body-parser": "^1.5.2",
     "errorhandler": "^1.1.1",
+    "express": "^4.15.3",
     "jade": "~1.1.5",
-    "stylus": "~0.42.2",
-    "rss": "~0.3.2",
-    "node-markdown": "~0.1.1",
+    "method-override": "^2.3.9",
     "mongoose": ">=3.0.0",
+    "node-markdown": "~0.1.1",
+    "rss": "~0.3.2",
     "slug": "~0.4.0",
-    "bases": "~0.2.0"
+    "stylus": "~0.42.2"
   },
   "scripts": {
     "start": "node simple.js"
